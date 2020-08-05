@@ -1,0 +1,6 @@
+---
+- name: reload daemon
+  command: systemctl daemon-reload
+
+- name: restart predixy
+  service: name=predixy state=restarted enabled=yes

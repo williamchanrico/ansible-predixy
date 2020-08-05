@@ -1,0 +1,17 @@
+---
+predixy_version: "1.0.5"
+predixy_release: "predixy-{{ predixy_version }}-bin-amd64-linux"
+predixy_release_archive: "{{ predixy_release }}.tar.gz"
+predixy_download_url: "https://github.com/joyieldInc/predixy/releases/download/{{ predixy_version }}/{{ predixy_release_archive }}"
+predixy_binary: "predixy-{{ predixy_version }}/bin/predixy"
+
+predixy_owner: "root"
+predixy_group: "root"
+
+predixy_install_directory: "/usr/local/predixy"
+predixy_install_directory_mode: 0644
+
+predixy_config_directory: "/etc/predixy"
+predixy_config_directory_mode: 0644
+
+predixy_opts: "{{ predixy_config_directory }}/predixy.conf"

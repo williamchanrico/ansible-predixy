@@ -1,0 +1,22 @@
+# {{ansible_managed}}
+
+[Unit]
+Description=Predixy Redis Proxy service
+After=network.target
+Wants=network.target
+
+[Service]
+ExecStart={{ predixy_install_directory }}/{{ predixy_binary }} {{ predixy_opts }}
+
+Restart=always
+RestartSec=20
+TimeoutSec=120
+User={{ predixy_owner }}
+Group={{ predixy_group }}
+StandardOutput=journal
+StandardError=journal
+LimitNOFILE=1000000
+LimitNPROC=65536
+
+[Install]
+WantedBy=multi-user.target

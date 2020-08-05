@@ -1,0 +1,14 @@
+---
+- name: "Check if systemd exists"
+  stat:
+    path: /etc/systemd/system
+  register: systemd_check
+
+- name: "Install predixy systemd service"
+  template:
+    src: predixy.service.j2
+    dest: /etc/systemd/system/predixy.service
+  when: systemd_check.stat.exists == true
+  notify:
+    - reload daemon
+    - restart predixy

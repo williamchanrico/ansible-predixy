@@ -1,0 +1,40 @@
+## redis cluster server pool define
+
+##ClusterServerPool {
+##    [Password xxx]                        #default no
+##    [MasterReadPriority [0-100]]          #default 50
+##    [StaticSlaveReadPriority [0-100]]     #default 0
+##    [DynamicSlaveReadPriority [0-100]]    #default 0
+##    [RefreshInterval number[s|ms|us]]     #default 1, means 1 second
+##    [ServerTimeout number[s|ms|us]]       #default 0, server connection socket read/write timeout
+##    [ServerFailureLimit number]           #default 10
+##    [ServerRetryTimeout number[s|ms|us]]  #default 1
+##    [KeepAlive seconds]                   #default 0, server connection tcp keepalive
+
+##    Servers {
+##        + addr
+##        ...
+##    }
+##}
+
+{% if predixy_config.cluster is defined and predixy_config.cluster | length %}
+ClusterServerPool {
+    MasterReadPriority "{{ predixy_config.cluster.master_read_priority | default('60') }}"
+    StaticSlaveReadPriority "{{ predixy_config.cluster.static_slave_read_priority | default('50') }}"
+    DynamicSlaveReadPriority "{{ predixy_config.cluster.dynamic_slave_read_priority | default('50') }}"
+    RefreshInterval "{{ predixy_config.cluster.refresh_interval | default('1') }}"
+    ServerTimeout "{{ predixy_config.cluster.server_timeout | default('1') }}"
+    ServerFailureLimit "{{ predixy_config.cluster.server_failure_limit | default('10') }}"
+    ServerRetryTimeout "{{ predixy_config.cluster.server_retry_timeout | default('1') }}"
+    KeepAlive "{{ predixy_config.cluster.keep_alive | default('120') }}"
+    Servers {
+{% if predixy_config.cluster.servers is defined and predixy_config.cluster.servers | length %}
+{% for hostport in predixy_config.cluster.servers %}
+        + {{ hostport }}
+{% endfor %}
+{% else %}
+        + 127.0.0.1:6379 # Default, please define predixy_config.cluster.servers in group_vars
+{% endif %}
+    }
+}
+{% endif %}

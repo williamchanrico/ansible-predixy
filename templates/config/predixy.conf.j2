@@ -1,0 +1,108 @@
+################################### GENERAL ####################################
+## Predixy configuration file example
+
+## Specify a name for this predixy service
+## redis command INFO can get this
+Name "{{ predixy_config.name | default('predixy-redis-proxy') }}"
+
+## Specify listen address, support IPV4, IPV6, Unix socket
+## Examples:
+# Bind 127.0.0.1:7617
+# Bind 0.0.0.0:7617
+# Bind /tmp/predixy
+Bind "{{ predixy_config.bind | default('0.0.0.0:6379') }}"
+
+## Default is 0.0.0.0:7617
+# Bind 0.0.0.0:7617
+
+## Worker threads
+WorkerThreads "{{ predixy_config.worker_threads | default(ansible_processor_vcpus) }}"
+
+## Memory limit, 0 means unlimited
+
+## Examples:
+# MaxMemory 100M
+# MaxMemory 1G
+# MaxMemory 0
+
+## MaxMemory can change online by CONFIG SET MaxMemory xxx
+## Default is 0
+# MaxMemory 0
+MaxMemory "{{ predixy_config.max_memory | default('0') }}"
+
+## Close the connection after a client is idle for N seconds (0 to disable)
+## ClientTimeout can change online by CONFIG SET ClientTimeout N
+## Default is 0
+ClientTimeout "{{ predixy_config.client_timeout | default('0') }}"
+
+
+## IO buffer size
+## Default is 4096
+BufSize "{{ predixy_config.buf_size | default('4096') }}"
+
+################################### LOG ########################################
+## Log file path
+## Unspecify will log to stdout
+## Default is Unspecified
+# Log ./predixy.log
+
+## LogRotate support
+
+## 1d rotate log every day
+## nh rotate log every n hours   1 <= n <= 24
+## nm rotate log every n minutes 1 <= n <= 1440
+## nG rotate log evenry nG bytes
+## nM rotate log evenry nM bytes
+## time rotate and size rotate can combine eg 1h 2G, means 1h or 2G roate a time
+
+## Examples:
+# LogRotate 1d 2G
+# LogRotate 1d
+
+## Default is disable LogRotate
+
+
+## In multi-threads, worker thread log need lock,
+## AllowMissLog can reduce lock time for improve performance
+## AllowMissLog can change online by CONFIG SET AllowMissLog true|false
+## Default is true
+# AllowMissLog false
+
+## LogLevelSample, output a log every N
+## all level sample can change online by CONFIG SET LogXXXSample N
+LogVerbSample "{{ predixy_config.log_verb_sample | default('0') }}"
+LogDebugSample "{{ predixy_config.log_debug_sample | default('0') }}"
+LogInfoSample "{{ predixy_config.log_info_sample | default('10000') }}"
+LogNoticeSample "{{ predixy_config.log_notice_sample | default('1') }}"
+LogWarnSample "{{ predixy_config.log_warn_sample | default('1') }}"
+LogErrorSample "{{ predixy_config.log_error_sample | default('1') }}"
+
+
+################################### AUTHORITY ##################################
+{% if predixy_config.enable_auth is defined and predixy_config.enable_auth %}
+Include auth.conf
+{% endif %}
+
+################################### SERVERS ####################################
+{% if predixy_config.cluster is defined and predixy_config.cluster | length %}
+Include cluster.conf
+{% endif %}
+# Include sentinel.conf
+# Include try.conf
+
+
+################################### DATACENTER #################################
+## LocalDC specify current machine dc
+# LocalDC bj
+
+## see dc.conf
+# Include dc.conf
+
+
+################################### COMMAND ####################################
+## Custom command define, see command.conf
+#Include command.conf
+
+################################### LATENCY ####################################
+## Latency monitor define, see latency.conf
+Include latency.conf

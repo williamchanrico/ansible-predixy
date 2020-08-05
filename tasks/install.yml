@@ -1,0 +1,38 @@
+---
+- name: "Downloading predixy binaries"
+  get_url:
+    url: "{{ predixy_download_url }}"
+    dest: "/tmp/{{ predixy_release_archive }}"
+    owner: "{{ predixy_owner }}"
+    group: "{{ predixy_group }}"
+    mode: 0644
+
+- name: "Creating Predixy config directory"
+  file:
+    path: "{{ predixy_config_directory }}"
+    owner: "{{ predixy_owner }}"
+    group: "{{ predixy_group }}"
+    mode: "{{ predixy_config_directory_mode }}"
+    state: directory
+
+- name: "Creating Predixy Install directory"
+  file:
+    path: "{{ predixy_install_directory }}"
+    owner: "{{ predixy_owner }}"
+    group: "{{ predixy_group }}"
+    mode: "{{ predixy_install_directory_mode }}"
+    state: directory
+
+- name: "Unarchive Predixy"
+  unarchive:
+    copy: no
+    src: "/tmp/{{ predixy_release_archive }}"
+    dest: "{{ predixy_install_directory }}"
+
+- name: "Link Predixy binaries to /usr/local/bin/predixy"
+  file:
+    src: "{{ predixy_install_directory }}/{{ predixy_binary }}"
+    dest: "/usr/local/bin/predixy"
+    owner: "{{ predixy_owner }}"
+    group: "{{ predixy_group }}"
+    state: link

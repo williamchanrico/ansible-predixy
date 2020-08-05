@@ -1,0 +1,6 @@
+---
+- include: install.yml
+- include: systemd.yml
+- include: config.yml
+  tags:
+    - predixy_config
