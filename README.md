@@ -12,7 +12,7 @@ Github: [https://github.com/joyieldInc/predixy](https://github.com/joyieldInc/pr
   hosts: "{{ custom_hosts | default('tag_Hostgroup_example_predixy') }}"
   vars:
     predixy_config:
-	  bind: 0.0.0.0:6379
+      bind: 0.0.0.0:6379
       cluster:
         servers:
           - 10.x.x.x:6379
