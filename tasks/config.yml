@@ -4,6 +4,36 @@
     path: "{{ predixy_config_directory }}"
   register: predixy_config_dir_check
 
+- name: "Using 'predixy_config.cluster.servers_dynamic_domain'"
+  block:
+    - name: "Detected usage of 'predixy_config.cluster.servers_dynamic_domain'"
+      command:
+        argv:
+          - dig
+          - +short
+          - "{{ predixy_config.cluster.servers_dynamic_domain }}"
+      register: predixy_dynamic_cluster_servers
+
+    - name: "Abort on misconfigured servers_dynamic_domain '{{ predixy_config.cluster.servers_dynamic_domain }}'"
+      fail:
+        msg: "The domain {{ predixy_config.cluster.servers_dynamic_domain }} does not resolve to any addresses. Please check the target servers domain specified in predixy_config.cluster.servers_dynamic_domain!"
+      when: predixy_dynamic_cluster_servers is defined and predixy_dynamic_cluster_servers.stdout_lines | length == 0
+
+    - name: "Output resolved servers_dynamic_domain {{ predixy_config.cluster.servers_dynamic_domain }}"
+      debug:
+        msg: "Configuring predixy cluster servers: {{ predixy_dynamic_cluster_servers.stdout_lines }}"
+  when: predixy_config.cluster.servers_static is not defined and predixy_config.cluster.servers_dynamic_domain is defined and predixy_config.cluster.servers_dynamic_domain | length > 0
+
+- name: "Using 'predixy_config.cluster.servers_static'. Output target cluster servers_static addresses"
+  debug:
+    msg: "Configuring predixy cluster servers: {{ predixy_config.cluster.servers_static }}"
+  when: predixy_config.cluster.servers_static is defined
+
+- name: "You have 10 seconds to abort! To be, or not to be."
+  wait_for:
+    timeout: 10
+  delegate_to: localhost
+
 - name: "Install predixy config files"
   template:
     src: "config/{{ item }}.j2"

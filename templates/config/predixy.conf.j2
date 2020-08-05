@@ -86,6 +86,8 @@ Include auth.conf
 ################################### SERVERS ####################################
 {% if predixy_config.cluster is defined and predixy_config.cluster | length %}
 Include cluster.conf
+{% else %}
+# Include cluster.conf
 {% endif %}
 # Include sentinel.conf
 # Include try.conf

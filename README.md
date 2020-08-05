@@ -14,9 +14,16 @@ Github: [https://github.com/joyieldInc/predixy](https://github.com/joyieldInc/pr
     predixy_config:
       bind: 0.0.0.0:6379
       cluster:
-        servers:
-          - 10.x.x.x:6379
-          - 10.x.x.x:6379
+	  	# Choose either ONE of these 2:
+		# Dynamically resolve target servers domain via ansible
+        servers_dynamic_domain: target-cluster.service.consul
+        servers_dynamic_port: 6379
+		
+		# Or statically configure target servers
+        servers_static:
+          - 10.1.2.3:6379
+          - 10.1.2.4:6379
+          - 10.1.2.5:6379
 
   roles:
     - predixy

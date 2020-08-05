@@ -28,12 +28,19 @@ ClusterServerPool {
     ServerRetryTimeout "{{ predixy_config.cluster.server_retry_timeout | default('1') }}"
     KeepAlive "{{ predixy_config.cluster.keep_alive | default('120') }}"
     Servers {
-{% if predixy_config.cluster.servers is defined and predixy_config.cluster.servers | length %}
-{% for hostport in predixy_config.cluster.servers %}
+{% if predixy_config.cluster.servers_static is defined and predixy_config.cluster.servers_static | length %}
+{% for hostport in predixy_config.cluster.servers_static %}
         + {{ hostport }}
 {% endfor %}
+{% elif predixy_dynamic_cluster_servers.stdout_lines is defined and predixy_dynamic_cluster_servers | length %}
+{% for host in predixy_dynamic_cluster_servers.stdout_lines %}
+        + {{ host }}:{{ predixy_config.cluster.servers_dynamic_port | default('6379') }}
+{% endfor %}
 {% else %}
-        + 127.0.0.1:6379 # Default, please define predixy_config.cluster.servers in group_vars
+        # Default, please define one of these variables:
+        # - predixy_config.cluster.servers_static
+        # - predixy_config.cluster.servers_dynamic_domain
+        + 127.0.0.1:6379
 {% endif %}
     }
 }
